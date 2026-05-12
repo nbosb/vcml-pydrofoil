@@ -55,4 +55,5 @@ COPY sysc_vp/launch.sh .
 COPY sysc_vp/benchmark benchmark/ 
 RUN chmod +x launch.sh
 
-CMD ["./launch.sh", "benchmark/riscv64_ex.cfg"]
+ENTRYPOINT ["./launch.sh"]
+CMD ["benchmark/riscv64_ex.cfg"]
