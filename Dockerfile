@@ -36,8 +36,8 @@ RUN mkdir -p ./pypy-pydrofoil-scripting-experimental && \
     tar -xjf ./artifact/pypy-pydrofoil-scripting-experimental.tar.bz2 \
        -C ./pypy-pydrofoil-scripting-experimental --strip-components=1
 
-RUN chmod +x entrypoint.sh
-RUN ./entrypoint.sh
+RUN chmod +x  build_pypy_cffi_test.sh
+RUN ./build_pypy_cffi_test.sh
 
 #To build SystemC VP
 RUN mkdir -p build && cd build && \
