@@ -39,15 +39,7 @@ RUN mkdir -p ./pypy-pydrofoil-scripting-experimental && \
 RUN chmod +x  build_pypy_cffi_test.sh
 RUN ./build_pypy_cffi_test.sh
 
-#To build SystemC VP
-RUN mkdir -p build && cd build && \
-    cmake ../sysc_vp \
-        -DCMAKE_PREFIX_PATH=${SYSTEMC_HOME} \
-        -DCMAKE_BUILD_TYPE=Debug && \
-    make -j$(nproc)
-
-ENV LD_LIBRARY_PATH=/vcml-pydrofoil/pypy-pydrofoil-scripting-experimental/bin:/vcml-pydrofoil:/vcml-pydrofoil/build:/vcml-pydrofoil/sysc_vp:$LD_LIBRARY_PATH
-
+ENV LD_LIBRARY_PATH=/vcml-pydrofoil/pypy-pydrofoil-scripting-experimental/bin:/vcml-pydrofoil:/vcml-pydrofoil/build:/vcml-pydrofoil/sysc_vp:${LD_LIBRARY_PATH:-}
 
 #To execute the launch script
 COPY sysc_vp/launch.sh .

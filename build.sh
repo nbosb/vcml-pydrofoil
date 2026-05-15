@@ -25,8 +25,6 @@ else
 	exit 1
 fi
 
-mkdir -p $DIR/build $DIR/images
-
 IMAGE_NAME="vcml-pydrofoil-test"
 
 echo "Building image..."
@@ -44,7 +42,6 @@ if [ -n "$CFG_FILE" ]; then
         --rm \
 		-it \
         -v "$(dirname "$(realpath "$CFG_FILE")"):/configs:ro" \
-        -v "$DIR/images:/vcml-pydrofoil/images" \
         "$IMAGE_NAME" \
         "/configs/$CFG_BASENAME"
 else
@@ -54,6 +51,5 @@ else
         $CONTAINER_PROGRAM_FLAGS \
         --rm \
 		-it \
-        -v "$DIR/images:/vcml-pydrofoil/images" \
         "$IMAGE_NAME"
 fi
