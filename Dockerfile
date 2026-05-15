@@ -30,15 +30,14 @@ RUN wget https://downloads.python.org/pypy/pypy3.11-v7.3.21-linux64.tar.bz2 && \
 ENV PATH="/opt/pypy/bin:$PATH"
 ENV PYTHONPATH="/vcml-pydrofoil"
 
-#Access Pydrofoil-PyPy plugin from downloaded artifact 
+#Unzip the Pydrofoil-PyPy plugin from downloaded artifact 
 RUN unzip artifact.zip -d ./artifact
 RUN mkdir -p ./pypy-pydrofoil-scripting-experimental && \
     tar -xjf ./artifact/pypy-pydrofoil-scripting-experimental.tar.bz2 \
        -C ./pypy-pydrofoil-scripting-experimental --strip-components=1
 
-#To execute the build script
-RUN chmod +x build.sh
-RUN ./build.sh
+RUN chmod +x entrypoint.sh
+RUN ./entrypoint.sh
 
 #To build SystemC VP
 RUN mkdir -p build && cd build && \

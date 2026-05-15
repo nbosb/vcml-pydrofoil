@@ -1,6 +1,33 @@
-./pypy-pydrofoil-scripting-experimental/bin/pypy3 build_ext.py
-gcc -pthread -DNDEBUG -O2 -fPIC -I./pypy-pydrofoil-scripting-experimental/include/pypy3.11 -c _pydrofoilcapi_cffi.c -o ./_pydrofoilcapi_cffi.o
-gcc -pthread -shared -Wl,-Bsymbolic-functions ./_pydrofoilcapi_cffi.o -L./pypy-pydrofoil-scripting-experimental/bin -L./pypy-pydrofoil-scripting-experimental/pypy/goal -lpypy3.11-c -o ./libpydrofoilcapi_cffi.so
-gcc -pthread -I./pypy-pydrofoil-scripting-experimental/include/pypy3.11/ -Wl,-Bsymbolic-functions testmain.c ./_pydrofoilcapi_cffi.c -L ./pypy-pydrofoil-scripting-experimental/bin  -l pypy3.11-c -o testplugin
-LD_LIBRARY_PATH=.:./pypy-pydrofoil-scripting-experimental/bin ./testplugin ./input/rv64ui-p-addi.elf 100
+set -e
 
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+    DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+    SOURCE="$(readlink "$SOURCE")"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+
+CONTAINER_PROGRAM=""
+CONTAINER_PROGRAM_FLAGS=""
+
+if command -v podman &> /dev/null; then
+	CONTAINER_PROGRAM="podman"
+	CONTAINER_PROGRAM_FLAGS="--userns keep-id"
+	echo "Using podman"
+elif command -v docker &> /dev/null; then
+	CONTAINER_PROGRAM="docker"
+	CONTAINER_PROGRAM_FLAGS="--user $(id -u):$(id -g)"
+	echo "Using docker"
+else
+	echo "Error: No program found to launch the containers. Please install podman or docker."
+	exit 1
+fi
+
+mkdir -p $DIR/build $DIR/images
+
+$CONTAINER_PROGRAM build --tag vcml-pydrofoil-test .
+
+$CONTAINER_PROGRAM run \
+    $CONTAINER_PROGRAM_FLAGS \
+    --rm  -it  vcml-pydrofoil-test
