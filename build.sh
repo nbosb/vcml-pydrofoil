@@ -12,6 +12,7 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 CONTAINER_PROGRAM=""
 CONTAINER_PROGRAM_FLAGS=""
 
+#Check for installed container runtime
 if command -v podman &> /dev/null; then
 	CONTAINER_PROGRAM="podman"
 	CONTAINER_PROGRAM_FLAGS="--userns keep-id"
@@ -27,9 +28,11 @@ fi
 
 IMAGE_NAME="vcml-pydrofoil-test"
 
+#Build container image
 echo "Building image..."
 $CONTAINER_PROGRAM build -t "$IMAGE_NAME" "$DIR"
 
+#Run the image build with the available container runtime
 CFG_FILE="$1"
 
 if [ -n "$CFG_FILE" ]; then
