@@ -26,7 +26,7 @@ else
 	exit 1
 fi
 
-IMAGE_NAME="vcml-pydrofoil-test"
+IMAGE_NAME="vcml-pydrofoil"
 
 #Build container image
 echo "Building image..."
