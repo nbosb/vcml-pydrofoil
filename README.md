@@ -46,13 +46,6 @@ docker run --rm -it -v $(pwd):/configs vcml-pydrofoil example.cfg
 ```bash
 podman run --rm -it -v $(pwd):/configs vcml-pydrofoil <config-file>.cfg
 ```
-
-### Open an interactive shell inside the container
-For debugging or manual execution:
-
-```bash
-docker run --rm -it -v $(pwd):/configs vcml-pydrofoil /bin/bash
-```
 ### Notes
 * `-v $(pwd):/configs` mounts the current host directory into the container.
 * `--rm` removes the container automatically after execution.
