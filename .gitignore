@@ -1,5 +1,4 @@
 pypy-pydrofoil-scripting-experimental/*
 testplugin
 _pydrofoilcapi_cffi.*
-artifact.zip
 vcml-pydrofoil.tar
