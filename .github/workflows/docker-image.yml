@@ -18,7 +18,8 @@ jobs:
 
       - name: Build image
         run: |
-          docker build -t vcml-pydrofoil:latest .
+          chmod +x build.sh
+          ./build.sh
 
       - name: Save image as OCI archive (Podman + Docker compatible)
         run: |
