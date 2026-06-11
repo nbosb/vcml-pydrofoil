@@ -2,17 +2,32 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        run: |
+          docker build -t vcml-pydrofoil:latest .
+
+      - name: Save image as OCI archive (Podman + Docker compatible)
+        run: |
+          docker save vcml-pydrofoil:latest -o vcml-pydrofoil.tar
+          gzip vcml-pydrofoil.tar
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vcml-pydrofoil-image
+          path: vcml-pydrofoil.tar.gz
+          retention-days: 30
