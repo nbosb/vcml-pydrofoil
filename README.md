@@ -30,7 +30,7 @@ The two parts, Pydrofoil and SystemC-TLM, communicate through a C-based API.
     ```
 
 ## 2) Run the simulator 
-After the initial build step, the container image ('vcml-pydrofoil') is available locally and the simulator can be executed directly without rebuilding the project.
+After the initial build step, the container image (`vcml-pydrofoil`) is available locally, and the simulator can be executed directly without rebuilding the project. Alternatively, the latest project container image can be dowloaded from [this link](https://github.com/CGhinami/vcml-pydrofoil/actions).
 
 ### Run with a configuration file
 From the directory containing your `.cfg` file:

@@ -18,8 +18,7 @@ jobs:
 
       - name: Build image
         run: |
-          chmod +x build.sh
-          ./build.sh
+          docker build -t vcml-pydrofoil:latest .
 
       - name: Save image as OCI archive (Podman + Docker compatible)
         run: |
@@ -31,4 +30,3 @@ jobs:
         with:
           name: vcml-pydrofoil-image
           path: vcml-pydrofoil.tar.gz
-          retention-days: 30
