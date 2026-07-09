@@ -1,6 +1,58 @@
-./pypy-pydrofoil-scripting-experimental/bin/pypy3 build_ext.py
-gcc -pthread -DNDEBUG -O2 -fPIC -I./pypy-pydrofoil-scripting-experimental/include/pypy3.11 -c _pydrofoilcapi_cffi.c -o ./_pydrofoilcapi_cffi.o
-gcc -pthread -shared -Wl,-Bsymbolic-functions ./_pydrofoilcapi_cffi.o -L./pypy-pydrofoil-scripting-experimental/bin -L./pypy-pydrofoil-scripting-experimental/pypy/goal -lpypy3.11-c -o ./libpydrofoilcapi_cffi.so
-gcc -pthread -I./pypy-pydrofoil-scripting-experimental/include/pypy3.11/ -Wl,-Bsymbolic-functions testmain.c ./_pydrofoilcapi_cffi.c -L ./pypy-pydrofoil-scripting-experimental/bin  -l pypy3.11-c -o testplugin
-LD_LIBRARY_PATH=.:./pypy-pydrofoil-scripting-experimental/bin ./testplugin ./input/rv64ui-p-addi.elf 100
+#!/usr/bin/env bash
+set -e
 
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+    DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+    SOURCE="$(readlink "$SOURCE")"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+
+CONTAINER_PROGRAM=""
+CONTAINER_PROGRAM_FLAGS=""
+
+#Check for installed container runtime
+if command -v podman &> /dev/null; then
+	CONTAINER_PROGRAM="podman"
+	CONTAINER_PROGRAM_FLAGS="--userns keep-id"
+	echo "Using podman"
+elif command -v docker &> /dev/null; then
+	CONTAINER_PROGRAM="docker"
+	CONTAINER_PROGRAM_FLAGS="--user $(id -u):$(id -g)"
+	echo "Using docker"
+else
+	echo "Error: No program found to launch the containers. Please install podman or docker."
+	exit 1
+fi
+
+IMAGE_NAME="vcml-pydrofoil:latest"
+
+#Build container image
+echo "Building image..."
+$CONTAINER_PROGRAM build -t "$IMAGE_NAME" "$DIR"
+
+#Run the image build with the available container runtime
+CFG_FILE="$1"
+
+if [ -n "$CFG_FILE" ]; then
+    CFG_BASENAME=$(basename "$CFG_FILE")
+
+    echo "Running with config: $CFG_BASENAME"
+
+    $CONTAINER_PROGRAM run \
+        $CONTAINER_PROGRAM_FLAGS \
+        --rm \
+		-it \
+        -v "$(dirname "$(realpath "$CFG_FILE")"):/configs:ro" \
+        "$IMAGE_NAME" \
+        "/configs/$CFG_BASENAME"
+else
+    echo "Running default configuration"
+
+    $CONTAINER_PROGRAM run \
+        $CONTAINER_PROGRAM_FLAGS \
+        --rm \
+		-it \
+        "$IMAGE_NAME"
+fi

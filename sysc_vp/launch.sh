@@ -23,11 +23,20 @@ fi
 
 VP_CFG=$1
 
-# Verify that the file exists
-if [[ ! -f "$VP_CFG" ]]; then
-    echo "Config file not found: $VP_CFG"
+if [[ -f "/configs/$VP_CFG" ]]; then
+    VP_CFG="/configs/$VP_CFG"
+elif [[ -f "$VP_CFG" ]]; then
+    VP_CFG="$VP_CFG"
+else
+    echo "Config not found: $VP_CFG"
     exit 1
 fi
+
+# Verify that the file exists
+#if [[ ! -f "$VP_CFG" ]]; then
+#   echo "Config file not found: $VP_CFG"
+#   exit 1
+#fi
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"$PYDROFOIL_BIN_DIR"
 

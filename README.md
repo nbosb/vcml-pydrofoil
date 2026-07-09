@@ -9,32 +9,48 @@ The two parts, Pydrofoil and SystemC-TLM, communicate through a C-based API.
 
 2) Execute the build.sh script:<br/>
     **The script expects the downloaded plugin to be in the same directory of the build.sh**.
-    ```
+    ```bash
     cd ~/vcml-pydrofoil
     ./build.sh
     ```
     This will:<br/>
+    - Build the Docker image <br/>
     - Generate C-based glue code that exposes python functions (`gluecode.py` code ends up in `_pydrofoilcapi_cffi.c`)<br/>
     - Compile the generated C glue code to an object file (`_pydrofoilcapi_cffi.o`)<br/>
     - Compile a test C file (`testmain.c`) that uses the API functions<br/>
     - Link both C files with the PyPy runtime library (`libpypy3.11-c.so`)<br/>
     - Execute the test file (test main() -> API function -> PyPy interpreter runs python ISS)<br/>
-
-3) Build the SystemC environment:<br/>
+    - Build the SystemC environment <br/>
+    - Run the simulator with the default .cfg file
+  
+    ### Note
+    To run the simulator with your .cfg file:
     ```
-    cd ~/vcml-pydrofoil/sysc_vp
-    make # Use make PROFILING=1 if interested in profiling information, see below
+    ./build.sh <path to the simulator .cfg>
     ```
 
-## 2) Run the simulator
-To run the simulator use:
-```
-cd ~/vcml-pydrofoil/sysc_vp
-./launch.sh <path to the simulator .cfg>
+## 2) Run the simulator 
+After the initial build step, the container image (`vcml-pydrofoil`) is available locally, and the simulator can be executed directly without rebuilding the project. Alternatively, the latest project container image can be dowloaded from [this link](https://github.com/CGhinami/vcml-pydrofoil/actions).
 
-# Only for debugging:
-./launch.sh -d <path to the simulator .cfg>
+### Run with a configuration file
+From the directory containing your `.cfg` file:
+```bash
+docker run --rm -it -v $(pwd):/configs vcml-pydrofoil <config-file.cfg>
 ```
+Example:
+```bash
+docker run --rm -it -v $(pwd):/configs vcml-pydrofoil example.cfg
+```
+
+### Run using Podman
+```bash
+podman run --rm -it -v $(pwd):/configs vcml-pydrofoil <config-file>.cfg
+```
+### Notes
+* `-v $(pwd):/configs` mounts the current host directory into the container.
+* `--rm` removes the container automatically after execution.
+* `-it` enables interactive terminal output.
+* Configuration files are expected to be accessible under `/configs` inside the container.
 
 ## 3) Profile the SystemC-TLM2.0 
 Requirements: *perf* and *hotspot*
