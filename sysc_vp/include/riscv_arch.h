@@ -1,6 +1,17 @@
+/******************************************************************************
+ *                                                                            *
+ * Copyright 2026 Chiara Ghinami                                              *
+ *                                                                            *
+ * This software is licensed under the MIT license found in the               *
+ * LICENSE file at the root directory of this source tree.                    *
+ *                                                                            *
+ ******************************************************************************/
+
 #pragma once
 #include "arch.h"
 #include <string.h>
+
+namespace architecture {
 
 static const Reg regdb_riscv[] = {
     {"zero", "x0"}, // I dont know why accessing this is impossible...
@@ -37,3 +48,5 @@ static const Reg regdb_riscv[] = {
     {"t6", "x31"},
     {"pc", "pc"}
 };
+
+} // architecture 

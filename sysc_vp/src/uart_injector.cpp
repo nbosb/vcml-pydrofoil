@@ -1,4 +1,15 @@
+/******************************************************************************
+ *                                                                            *
+ * Copyright 2026 Chiara Ghinami                                              *
+ *                                                                            *
+ * This software is licensed under the MIT license found in the               *
+ * LICENSE file at the root directory of this source tree.                    *
+ *                                                                            *
+ ******************************************************************************/
+
 #include "uart_injector.h"
+
+namespace injector{
 
 void UartInjector::uart_transmit() {
   while (true) {
@@ -22,5 +33,7 @@ UartInjector::UartInjector(const sc_core::sc_module_name &nm)
 }
 
 UartInjector::~UartInjector() {
+}
+
 }
 

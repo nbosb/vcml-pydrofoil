@@ -1,3 +1,12 @@
+/******************************************************************************
+ *                                                                            *
+ * Copyright 2026 Chiara Ghinami                                              *
+ *                                                                            *
+ * This software is licensed under the MIT license found in the               *
+ * LICENSE file at the root directory of this source tree.                    *
+ *                                                                            *
+ ******************************************************************************/
+
 #ifndef CORE_H
 #define CORE_H
 
@@ -8,6 +17,13 @@
 #include "python_tasks.h"
 #include <unordered_map>
 #include "arch.h"
+
+// FOrward declaration
+namespace backend {
+    struct PythonTask;
+}
+
+namespace core{
 
 enum : size_t {
     MEIP = 0, //irq for machine-level external interrupts
@@ -20,8 +36,6 @@ enum : size_t {
 };
 
 
-
-struct PythonTask;
 class PydrofoilCore : public vcml::processor{
     public:
         vcml::property<std::string> elf;
@@ -62,7 +76,7 @@ class PydrofoilCore : public vcml::processor{
         std::condition_variable memtask_cv;
         std::queue<MemAccess> memtask_queue;
 
-        Model core_arch;
+        architecture::Model core_arch;
 
 
         // This method gets repeatedly called by the processor class
@@ -86,7 +100,7 @@ class PydrofoilCore : public vcml::processor{
         void notify_pending_irq(bool set);
 
         std::thread python_worker_thread;
-        mutable std::queue<PythonTask> task_queue; // mutable is needed to relax the const-correctness compiler check
+        mutable std::queue<backend::PythonTask> task_queue; // mutable is needed to relax the const-correctness compiler check
                                                    // should only have one element
         mutable std::condition_variable task_cv;
         mutable std::mutex task_mutex;
@@ -101,5 +115,7 @@ class PydrofoilCore : public vcml::processor{
     protected:
         virtual void end_of_elaboration() override;
 };
+
+} // namespace core
 
 #endif

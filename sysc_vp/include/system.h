@@ -1,3 +1,12 @@
+/******************************************************************************
+ *                                                                            *
+ * Copyright 2026 Chiara Ghinami                                              *
+ *                                                                            *
+ * This software is licensed under the MIT license found in the               *
+ * LICENSE file at the root directory of this source tree.                    *
+ *                                                                            *
+ ******************************************************************************/
+
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
@@ -6,16 +15,7 @@
 #include "vcml/models/riscv/plic.h"
 #include "uart_injector.h"
 
-/* Eg where the data/instruction mem separation
-   could break the simulator:
-   li t0, 0x6f            # Load the instruction bytes into a register
-   sd t0, 0x1000(x0)      # Store it to address 0x1000
-   jalr x0, 0x1000(x0)    # Jump to address 0x1000
-   - The simulator executes sd t0, 0x1000(x0), calls the write callback
-   and writes the value 0x6f in the SystemC memory
-   - then the simulator fetches the instruction at 0x1000 (jalr) but it
-   does it from the ISS internal mem! 
-*/
+namespace virtual_platform{
 
 enum : mwr::u64 {
   SRAM_SZ = 128 * mwr::KiB,
@@ -30,7 +30,10 @@ enum : mwr::u64 {
   UART0_HI = UART0_LO + 0x1000 - 1,
 
   PLIC_LO = 0x1000a000,
-  PLIC_HI = PLIC_LO + 0x224FFF -1
+  PLIC_HI = PLIC_LO + 0x224FFF -1,
+
+  SIMDEV_LO = 0x10008000,
+  SIMDEV_HI = SIMDEV_LO + 0x1000 - 1
 };
 
 
@@ -49,6 +52,7 @@ class system : public vcml::system {
   vcml::property<range> bram;
   vcml::property<range> addr_uart0;
   vcml::property<range> addr_plic;
+  vcml::property<vcml::range> addr_simdev;
   vcml::property<int>   irq_uart0;
 
   system(const sc_core::sc_module_name &nm);
@@ -59,7 +63,7 @@ class system : public vcml::system {
   virtual int run() override;
 
  private:
-  PydrofoilCore m_core;
+  core::PydrofoilCore m_core;
 
   vcml::generic::bus     m_bus;
   vcml::generic::memory  m_ram;
@@ -75,9 +79,11 @@ class system : public vcml::system {
   
   vcml::serial::nrf51  m_uart0;
   vcml::riscv::plic    m_plic;
-  UartInjector         m_uart_injector;
 
-  void inject_data(sc_core::sc_time period);
+  vcml::serial::terminal m_term;
+  vcml::meta::simdev     m_simdev;
 };
+
+} // virtual platform
 
 #endif

@@ -1,3 +1,12 @@
+/******************************************************************************
+ *                                                                            *
+ * Copyright 2026 Chiara Ghinami                                              *
+ *                                                                            *
+ * This software is licensed under the MIT license found in the               *
+ * LICENSE file at the root directory of this source tree.                    *
+ *                                                                            *
+ ******************************************************************************/
+
 #pragma once
 #include <unordered_map>
 #include "memory_callbacks.h"
@@ -8,6 +17,13 @@
 extern "C" {
     #include "pydrofoilcapi.h" 
 }
+
+// Forward declaration of the core class
+namespace core {
+    class PydrofoilCore;
+}
+
+namespace backend {
 
 struct WriteRegArgs {
     const char* reg_name;
@@ -31,8 +47,8 @@ struct PythonTask {
     std::promise<uint64_t> result; // Avoids the burden of sync threads
 };  
 
-class PydrofoilCore; // The compiler needs to know that PydrofoilCore is a class
-
-auto create_handlers(PydrofoilCore& core)
+auto create_handlers(core::PydrofoilCore& pycore)
     -> std::unordered_map<Funct, std::function<void(PythonTask&)>>;
+
+} // namespace backend
 

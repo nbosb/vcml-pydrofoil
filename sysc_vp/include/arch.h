@@ -1,6 +1,16 @@
+/******************************************************************************
+ *                                                                            *
+ * Copyright 2026 Chiara Ghinami                                              *
+ *                                                                            *
+ * This software is licensed under the MIT license found in the               *
+ * LICENSE file at the root directory of this source tree.                    *
+ *                                                                            *
+ ******************************************************************************/
+
 #ifndef ARCH_H
 #define ARCH_H
 
+namespace architecture {
 
 struct Reg {
     const char*   gdb_name;
@@ -41,5 +51,7 @@ class Model {
         const Reg* registers;
         unsigned int nregs;
 };
+
+} // architecture
 
 #endif
