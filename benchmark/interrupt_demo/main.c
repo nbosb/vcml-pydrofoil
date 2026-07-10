@@ -2,6 +2,7 @@
 
 #define UART_BASE 0x10009000
 #define PLIC_BASE 0x1000a000
+#define SIMDEV_STOP 0x10008000
 
 #define NIRQ 1024
 #define NIRQ_LINES 32                // Number of interrupt lines per register
@@ -114,6 +115,14 @@ void trap_dispatch(void) {
     
 }
 
+void stop_simulation(){
+    *((int *)SIMDEV_STOP) = 1; // stop the simulation using the simdev
+
+    while (1) {
+        asm volatile("wfi");
+    }
+}
+
 
 int main(void) {
 
@@ -129,6 +138,5 @@ int main(void) {
     while (!irq_flag); 
     uart_print("Interrupt received\n");
 
-    while (1) 
-        asm volatile("wfi");
+    stop_simulation();
 }
