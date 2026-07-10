@@ -17,10 +17,12 @@ RUN apt-get update && apt-get install -y \
     libgmp-dev \
     zlib1g-dev
     
+# Copy everything to the working directory
 WORKDIR /vcml-pydrofoil
 COPY . .
 
 #Install PyPy for Pydrofoil
+# Download the tar with wget, unpacks it with tar -xjf and moves the pypy folder to /opt/
 RUN wget https://downloads.python.org/pypy/pypy3.11-v7.3.21-linux64.tar.bz2 && \
     tar -xjf pypy3.11-v7.3.21-linux64.tar.bz2 && \
     mv pypy3.11-v7.3.21-linux64 /opt/pypy && \
@@ -31,20 +33,18 @@ ENV PATH="/opt/pypy/bin:$PATH"
 ENV PYTHONPATH="/vcml-pydrofoil"
 
 #Unzip the Pydrofoil-PyPy plugin from downloaded artifact 
-RUN unzip artifact.zip -d ./artifact
-RUN mkdir -p ./pypy-pydrofoil-scripting-experimental && \
-    tar -xjf ./artifact/pypy-pydrofoil-scripting-experimental.tar.bz2 \
-       -C ./pypy-pydrofoil-scripting-experimental --strip-components=1
+# RUN unzip artifact.zip -d ./artifact
+# RUN mkdir -p ./pypy-pydrofoil-scripting-experimental && \
+#     tar -xjf ./artifact/pypy-pydrofoil-scripting-experimental.tar.bz2 \
+#        -C ./pypy-pydrofoil-scripting-experimental --strip-components=1
 
-RUN chmod +x  build_pypy_cffi_test.sh
-RUN ./build_pypy_cffi_test.sh
+RUN chmod +x  build_sim.sh
+RUN ./build_sim.sh
 
 ENV LD_LIBRARY_PATH=/vcml-pydrofoil/pypy-pydrofoil-scripting-experimental/bin:/vcml-pydrofoil:/vcml-pydrofoil/build:/vcml-pydrofoil/sysc_vp:${LD_LIBRARY_PATH:-}
 
-#To execute the launch script
-COPY sysc_vp/launch.sh .
-COPY sysc_vp/benchmark benchmark/ 
 RUN chmod +x launch.sh
 
-ENTRYPOINT ["./launch.sh"]
-CMD ["benchmark/riscv64_ex.cfg"]
+# We're going to be using the absolute path, since the path starts with the "/"
+ENTRYPOINT ["/vcml-pydrofoil/launch.sh"]
+CMD ["/vcml-pydrofoil/benchmark/riscv64_ex.cfg"]
