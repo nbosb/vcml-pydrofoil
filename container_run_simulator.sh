@@ -32,6 +32,13 @@ fi
 
 IMAGE_NAME="vcml-pydrofoil:latest"
 
+# Detects if the script is running in an interactive terminal (TTY)
+# If a TTY exists, use '-it'. If not (like in CI), only use '-i'
+INTERACTIVE_FLAGS="-i"
+if [[ -t 0 ]]; then
+    INTERACTIVE_FLAGS="-it"
+fi
+
 # If the cfg file was provided, this overwrites the one specified in the Dockerfile
 if [[ -n "$CFG_FILE" ]]; then
     CFG_BASENAME=$(basename "$CFG_FILE")
@@ -39,7 +46,7 @@ if [[ -n "$CFG_FILE" ]]; then
     $CONTAINER_PROGRAM run \
         $CONTAINER_PROGRAM_FLAGS \
         --rm \
-        -it \
+        $INTERACTIVE_FLAGS \
         -v "$(dirname "$(realpath "$CFG_FILE")"):/configs:ro" \
         "$IMAGE_NAME" \
         "$CFG_BASENAME"
@@ -47,6 +54,6 @@ else
     $CONTAINER_PROGRAM run \
         $CONTAINER_PROGRAM_FLAGS \
         --rm \
-        -it \
+        $INTERACTIVE_FLAGS \
         "$IMAGE_NAME"
 fi
