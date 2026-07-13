@@ -26,9 +26,14 @@ jobs:
             exit 1
           fi
           
-          echo "Downloading artifacts from run ID: $RUN_ID"
-          # Downloads and auto-extracts the artifacts into your current workspace directory
-          gh run download $RUN_ID --repo pydrofoil/pydrofoil --name artifact --dir ./pypy-pydrofoil-scripting-experimental
+          gh run download $RUN_ID --repo pydrofoil/pydrofoil --name artifact --dir ./tmp-artifact
+          
+          # Extract the actual tarball contents into the directory your script looks for
+          mkdir -p ./pypy-pydrofoil-scripting-experimental
+          tar -xjf ./tmp-artifact/pypy-pydrofoil-scripting-experimental.tar.bz2 -C ./pypy-pydrofoil-scripting-experimental --strip-components=1
+          
+          # Clean up the temporary folder
+          rm -rf ./tmp-artifact
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
