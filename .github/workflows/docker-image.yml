@@ -14,11 +14,33 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4 
 
-      - name: Pull image from GitHub Packages
-        run: docker pull ghcr.io/cghinami/vcml-pydrofoil:latest
+      - name: Download latest artifact from pydrofoil
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Finds the latest successful run ID for plugin.yml on the main branch
+          RUN_ID=$(gh run list --repo pydrofoil/pydrofoil --workflow plugin.yml --branch main --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          
+          if [ -z "$RUN_ID" ] || [ "$RUN_ID" = "null" ]; then
+            echo "Error: Could not find a successful run for plugin.yml on the main branch."
+            exit 1
+          fi
+          
+          echo "Downloading artifacts from run ID: $RUN_ID"
+          # Downloads and auto-extracts the artifacts into your current workspace directory
+          gh run download $RUN_ID --repo pydrofoil/pydrofoil --name artifact --dir ./pypy-pydrofoil-scripting-experimental
 
-      - name: Tag image for local script compatibility
-        run: docker tag ghcr.io/cghinami/vcml-pydrofoil:latest vcml-pydrofoil:latest
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image locally
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          tags: vcml-pydrofoil:latest
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Make script executable
         run: chmod +x container_run_simulator.sh
