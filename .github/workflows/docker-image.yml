@@ -12,33 +12,16 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Pull image from GitHub Packages
+        run: docker pull ghcr.io/cghinami/vcml-pydrofoil:latest
 
-      - name: Enable BuildKit caching and build the img
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          tags: vcml-pydrofoil:latest
-          load: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      - name: Tag image for local script compatibility
+        run: docker tag ghcr.io/cghinami/vcml-pydrofoil:latest vcml-pydrofoil:latest
 
       - name: Make script executable
         run: chmod +x container_run_simulator.sh
 
       - name: Run test
         run: timeout 30 ./container_run_simulator.sh docker
-
-      - name: Save image as OCI archive (Podman + Docker compatible)
-        run: |
-          docker save vcml-pydrofoil:latest -o vcml-pydrofoil.tar
-          gzip vcml-pydrofoil.tar
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: vcml-pydrofoil-image
-          path: vcml-pydrofoil.tar.gz
