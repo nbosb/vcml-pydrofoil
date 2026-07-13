@@ -5,11 +5,9 @@ The two parts, Pydrofoil and SystemC-TLM, communicate through a C API.
 
 ## Quick Start
 
-1) Download the Pydrofoil-PyPy plugin from [this link](https://github.com/pydrofoil/pydrofoil/actions/workflows/plugin.yml) and untar it. The framework expects this to be inside the `vcml-pydrofoil` project directory.
+1) Get the pre-built VP image from [here](https://github.com/CGhinami/vcml-pydrofoil/pkgs/container/vcml-pydrofoil)
 
-2) Get the pre-built VP image from [here](https://github.com/CGhinami/vcml-pydrofoil/pkgs/container/vcml-pydrofoil)
-
-3) Run the image. Both docker and podman options are supported. The docker option is the default one.
+2) Run the image. Both docker and podman options are supported. The docker option is the default one.
    ```bash
    cd ~/vcml-pydrofoil
    # To run it with podman
@@ -80,14 +78,23 @@ The VP's configuration file allows you to modify some properties about the VP wi
     ./build_sim.sh
     ```
 
-3) Run the simulator 
+## Run the simulator 
 
+Run [container_run_simulator.sh](container_run_simulator.sh) to run **with** container support. This will use docker by default, specify podman to use it.
 
-    Run [container_run_simulator.sh](container_run_simulator.sh) to run **with** container support. This will use docker by default, specify podman to use it.
+Run [launch.sh](launch.sh) to run **without** container support. 
 
-    Run [launch.sh](launch.sh) to run **without** container support. 
+Specify the configuration file if you do not want to run the default [riscv64 example](benchmark/riscv64_ex.cfg):
+```bash
+cd ~/vcml-pydrofoil
+# To run it with podman
+./container_run_simulation.sh podman <path to custom .cfg file>
+# To run it with docker
+./container_run_simulation.sh <path to custom .cfg file>
+```
 
-    Specify the configuration file if you do not want to run the default [riscv64 example](benchmark/riscv64_ex.cfg)
+*Note:*
+The simulator supports RTOS and bare-metal applications. Linux applications are still under test. The current simulator has only the UART peripheral connected, but the RISCV-compatible peripherals from [VCML](https://github.com/machineware-gmbh/vcml) are supported. To add them, modify the files where the peripherals are instantiated and connected ([system.cpp](sysc_vp/src/system.cpp) and [system.h](sysc_vp/include/system.h)).
 
 
 ## Profile the SystemC-TLM2.0 
