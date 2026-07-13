@@ -72,7 +72,6 @@ The VP's configuration file allows you to modify some properties about the VP wi
     - Compile the generated C glue code to an object file (*_pydrofoilcapi_cffi.o*)<br/>
     - Compile a test C file ([testmain.c](testmain.c)) that uses the API functions<br/>
     - Link both C files with the PyPy runtime library (*libpypy3.11-c.so*)<br/>
-    - Execute the test file<br/>
     - Build the SystemC environment <br/>
    
     -**Without** container support:

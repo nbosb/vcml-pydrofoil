@@ -38,7 +38,7 @@ ENV PYTHONPATH="/vcml-pydrofoil"
 #     tar -xjf ./artifact/pypy-pydrofoil-scripting-experimental.tar.bz2 \
 #        -C ./pypy-pydrofoil-scripting-experimental --strip-components=1
 
-RUN chmod +x  build_sim.sh
+RUN chmod +x build_sim.sh
 RUN ./build_sim.sh
 
 ENV LD_LIBRARY_PATH=/vcml-pydrofoil/pypy-pydrofoil-scripting-experimental/bin:/vcml-pydrofoil:/vcml-pydrofoil/build:/vcml-pydrofoil/sysc_vp:${LD_LIBRARY_PATH:-}
