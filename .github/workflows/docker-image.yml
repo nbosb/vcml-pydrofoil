@@ -7,8 +7,9 @@ on:
     branches: ["main"]
 
 jobs:
-  build:
+  docker:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -16,9 +17,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build image
-        run: |
-          docker build -t vcml-pydrofoil:latest .
+      - name: Enable BuildKit caching and build the img
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          tags: vcml-pydrofoil:latest
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Make script executable
+        run: chmod +x container_run_simulator.sh
+
+      - name: Run test
+        run: timeout 30 ./container_run_simulator.sh docker
 
       - name: Save image as OCI archive (Podman + Docker compatible)
         run: |
