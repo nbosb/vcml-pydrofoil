@@ -10,8 +10,7 @@
 #ifndef UART_INJECTOR_HPP
 #define UART_INJECTOR_HPP
 
-#include "vcml/core/component.h"
-#include "vcml/protocols/serial.h"
+#include "vcml.h"
 
 namespace injector {
 
@@ -29,7 +28,7 @@ class UartInjector : public vcml::module, public vcml::serial_host {
 
     void send_to_guest(uint8_t data);
 
-    ~UartInjector();
+    virtual ~UartInjector();
 };
 
 } // namespace injector

@@ -10,6 +10,8 @@
 #ifndef ARCH_H
 #define ARCH_H
 
+#include <cstring>
+
 namespace architecture {
 
 struct Reg {
@@ -21,9 +23,9 @@ struct Reg {
 
 class Model {
     public:
-    Model() {};
     Model(const char* name, int bits, const Reg* regs, int nregs):
         name(name), bits(bits), registers(regs), nregs(nregs) {};
+    Model() = delete;
 
     bool has_aarch32() const { return bits >= 32; }
     bool has_aarch64() const { return bits >= 64; }

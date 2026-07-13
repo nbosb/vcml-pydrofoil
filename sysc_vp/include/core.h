@@ -12,7 +12,6 @@
 
 #include "vcml.h"
 #include <future>
-#include <variant>
 #include <systemc>
 #include "python_tasks.h"
 #include <unordered_map>
@@ -42,13 +41,13 @@ class PydrofoilCore : public vcml::processor {
     vcml::property<bool> verbosity;
 
     PydrofoilCore(const sc_core::sc_module_name& name);
-    ~PydrofoilCore();
+    virtual ~PydrofoilCore();
 
     void* cpu;
 
     bool use_dmi;
     tlm::tlm_dmi dmi_cache;
-    unsigned long int n_cycles = 0;
+    unsigned long int n_cycles;
 
     // The total number of external interrupt inputs the PLIC can accept
     // vcml::gpio_target_array<vcml::riscv::plic::NIRQ> irq;
@@ -84,13 +83,13 @@ class PydrofoilCore : public vcml::processor {
     virtual void interrupt(size_t irq, bool set) override;
     void reset() override;
 
-    bool write_reg_dbg(size_t reg, const void* buf, size_t len) override;
-    bool read_reg_dbg(size_t regno, void* buf, size_t len) override;
-    bool insert_breakpoint(vcml::u64 addr);
-    bool remove_breakpoint(vcml::u64 addr);
+    virtual bool write_reg_dbg(size_t reg, const void* buf, size_t len) override;
+    virtual bool read_reg_dbg(size_t regno, void* buf, size_t len) override;
+    virtual bool insert_breakpoint(vcml::u64 addr) override;
+    virtual bool remove_breakpoint(vcml::u64 addr) override;
 
     private:
-    bool step = true; // For the first execution we want just 1 instruction to run
+    bool step;
 
     std::optional<bool> is_irq_pending;
     size_t irq_num;
@@ -102,7 +101,7 @@ class PydrofoilCore : public vcml::processor {
                                                         // check should only have one element
     mutable std::condition_variable task_cv;
     mutable std::mutex task_mutex;
-    bool stop_worker = false;
+    bool stop_worker;
 
     void set_verbosity(bool value);
     void python_worker_loop();

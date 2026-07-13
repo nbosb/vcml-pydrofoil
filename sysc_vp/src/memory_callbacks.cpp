@@ -8,6 +8,7 @@
  ******************************************************************************/
 
 #include "memory_callbacks.h"
+#include "core.h"
 #include <cstring> // for memset
 
 // C++ member functions cannot be used as callbacks, we need to define C-style functions

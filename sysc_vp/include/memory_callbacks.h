@@ -11,7 +11,6 @@
 #define PYTHON_CALLBACKS_H
 
 #include <cstdint>
-#include "core.h" // for PydrofoilCore
 
 extern "C" {
 int read_mem(void* cpu, uint64_t address, int size, void* destination, void* payload);

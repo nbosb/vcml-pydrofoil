@@ -9,7 +9,6 @@
 
 #pragma once
 #include "arch.h"
-#include <string.h>
 
 namespace architecture {
 

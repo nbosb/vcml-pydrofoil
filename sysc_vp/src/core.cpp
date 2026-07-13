@@ -18,15 +18,13 @@ PydrofoilCore::PydrofoilCore(const sc_core::sc_module_name& name):
     elf("elf", ""),
     arch_name("arch_name", "rv64"),
     verbosity("verbose", false),
-    core_arch()
+    cpu(nullptr),
+    use_dmi(true),
+    n_cycles(0),
+    step(true), // For the first execution we want just 1 instruction to run
+    stop_worker(false),
+    core_arch(arch_name.c_str(), arch_name == "rv64" ? 64 : 32, architecture::regdb_riscv, 33)
 {
-    char* core_type = (char*) "rv32";
-    if(arch_name.get() == "rv64") {
-        core_arch = architecture::Model("rv64", 64, architecture::regdb_riscv, 33);
-        core_type = (char*) "rv64";
-    } else
-        core_arch = architecture::Model("rv32", 32, architecture::regdb_riscv, 33);
-
     mwr::log_info("Running with arch: %d bit", 8 * core_arch.word_size());
     set_little_endian(); // Otherwise the gdbserver inverts the bytes it reads
 
@@ -34,7 +32,7 @@ PydrofoilCore::PydrofoilCore(const sc_core::sc_module_name& name):
 
     backend::PythonTask task;
     task.py_funct = backend::Funct::Init;
-    task.arg = core_type;
+    task.arg = arch_name.c_str();
     std::future<uint64_t> done = task.result.get_future();
 
     {
@@ -111,11 +109,7 @@ void PydrofoilCore::notify_pending_irq(bool set)
 
 void PydrofoilCore::interrupt(size_t irq, bool set)
 {
-    if(set)
-        is_irq_pending = true;
-    else
-        is_irq_pending = false;
-
+    is_irq_pending = set;
     irq_num = irq;
 }
 
@@ -230,11 +224,11 @@ void PydrofoilCore::simulate(size_t cycles)
                 return !memtask_queue.empty() || (done.wait_for(std::chrono::seconds(0)) == std::future_status::ready);
             });
 
-            if(!memtask_queue.empty()) {
-                memtask = std::move(memtask_queue.front());
-                memtask_queue.pop();
-            } else
+            if(memtask_queue.empty())
                 continue;
+
+            memtask = std::move(memtask_queue.front());
+            memtask_queue.pop();
         }
 
         bool success = false;

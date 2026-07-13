@@ -8,6 +8,9 @@
  ******************************************************************************/
 
 #include <chrono>
+#include <iostream>
+#include <ostream>
+#include <string>
 
 // The timer starts on construction and prints on destruction
 class Profiler {
@@ -17,11 +20,10 @@ class Profiler {
 
     Profiler(std::string fname): fname(fname), start(std::chrono::high_resolution_clock::now()) {}
 
-    ~Profiler()
+    virtual ~Profiler()
     {
         auto end = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
         std::cout << fname << ": " << duration.count() << std::endl;
-        ;
     }
 };
