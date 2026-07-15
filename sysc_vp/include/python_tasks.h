@@ -31,7 +31,7 @@ struct WriteRegArgs {
 };
 
 // std::monostate allows us to have no argument (and still have a valid arg which will default to monostate)
-using TaskArg = std::variant<std::monostate, size_t, char*, const char*, WriteRegArgs>;
+using TaskArg = std::variant<std::monostate, uint64_t, uint32_t, std::string, WriteRegArgs>;
 // enum class: no implicit conversion, name's scoped to enum
 enum class Funct {
     Init,

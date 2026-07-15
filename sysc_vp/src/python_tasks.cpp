@@ -19,8 +19,8 @@ auto create_handlers(core::PydrofoilCore& pycore) -> std::unordered_map<Funct, s
 #if PROFILING
                  Profiler t("Init");
 #endif
-                 auto core_type = std::get<char*>(task.arg);
-                 pycore.cpu = pydrofoil_allocate_cpu(core_type, nullptr);
+                 auto core_type = std::get<std::string>(task.arg);
+                 pycore.cpu = pydrofoil_allocate_cpu(core_type.data(), nullptr);
                  task.result.set_value(0);
              }},
             {Funct::SetCb,
@@ -82,8 +82,8 @@ auto create_handlers(core::PydrofoilCore& pycore) -> std::unordered_map<Funct, s
 #if PROFILING
                  Profiler t("ReadReg");
 #endif
-                 auto reg_name = std::get<const char*>(task.arg);
-                 auto reg_value = pydrofoil_cpu_read_reg(pycore.cpu, reg_name);
+                 auto reg_name = std::get<std::string>(task.arg);
+                 auto reg_value = pydrofoil_cpu_read_reg(pycore.cpu, reg_name.c_str());
                  task.result.set_value(reg_value);
              }},
             {Funct::FreeCpu,
@@ -99,7 +99,7 @@ auto create_handlers(core::PydrofoilCore& pycore) -> std::unordered_map<Funct, s
 #if PROFILING
                  Profiler t("SetVerbosity");
 #endif
-                 auto verbosity = std::get<size_t>(task.arg);
+                 auto verbosity = std::get<uint32_t>(task.arg);
                  pydrofoil_cpu_set_verbosity(pycore.cpu, verbosity);
                  task.result.set_value(0);
              }},

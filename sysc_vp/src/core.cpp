@@ -32,7 +32,7 @@ PydrofoilCore::PydrofoilCore(const sc_core::sc_module_name& name):
 
     backend::PythonTask task;
     task.py_funct = backend::Funct::Init;
-    task.arg = arch_name.c_str();
+    task.arg = arch_name;
     std::future<uint64_t> done = task.result.get_future();
 
     {
@@ -154,7 +154,7 @@ bool PydrofoilCore::read_reg_dbg(size_t regno, void* buf, size_t len)
 
     backend::PythonTask task;
     task.py_funct = backend::Funct::ReadReg;
-    task.arg = reg_name.c_str();
+    task.arg = reg_name;
     std::future<uint64_t> done = task.result.get_future();
 
     {
@@ -334,7 +334,7 @@ void PydrofoilCore::set_verbosity(bool value)
 {
     backend::PythonTask task;
     task.py_funct = backend::Funct::SetVerbosity;
-    task.arg = (bool) value;
+    task.arg = (uint32_t) value;
     std::future<uint64_t> done = task.result.get_future();
 
     {
