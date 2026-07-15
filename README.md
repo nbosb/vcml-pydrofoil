@@ -51,10 +51,12 @@ The VP's configuration file allows you to modify some properties about the VP wi
 
 ## Build the project from source
 
-1) Download the Pydrofoil-PyPy plugin from [this link](https://github.com/pydrofoil/pydrofoil/actions/workflows/plugin.yml) and untar it. The framework expects this to be inside the `vcml-pydrofoil` project directory.
+1) Clone this repository with the `--recursive` flag to initialize the submodules.
+
+2) Download the Pydrofoil-PyPy plugin from [this link](https://github.com/pydrofoil/pydrofoil/actions/workflows/plugin.yml) and untar it. The framework expects this to be inside the `vcml-pydrofoil` project directory.
 
 
-2) Build the project
+3) Build the project
 
     -**With** container support:
 
